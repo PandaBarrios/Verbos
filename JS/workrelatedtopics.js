@@ -1,3 +1,7 @@
+speechSynthesis.onvoiceschanged = () => {
+  speechSynthesis.getVoices();
+};
+
 const palabrasTrabajo = [
   { esp: "arreglar el error", eng: "fix the bug" },
   { esp: "firmar algunos documentos", eng: "sign some documents" },
@@ -87,8 +91,8 @@ function verificar() {
       "❌ Era: " + actual.eng + " — vuelve al final";
 
     hablar(actual.eng);
-
-    pendientes.push(actual);
+    reiniciar();
+   // pendientes.push(actual);
   }
 
   siguiente();
@@ -114,10 +118,25 @@ function reiniciar() {
 }
 
 function hablar(texto) {
+
+  const synth = window.speechSynthesis;
   const voz = new SpeechSynthesisUtterance(texto);
+
   voz.lang = "en-US";
   voz.rate = 0.9;
-  speechSynthesis.speak(voz);
+
+  const voces = synth.getVoices();
+
+  // Buscar una voz en inglés
+  const vozIngles = voces.find(v => 
+    v.lang === "en-US" || v.lang.startsWith("en-")
+  );
+
+  if (vozIngles) {
+    voz.voice = vozIngles;
+  }
+
+  synth.speak(voz);
 }
 
 document.getElementById("respuesta")
